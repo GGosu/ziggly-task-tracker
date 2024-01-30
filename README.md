@@ -32,7 +32,7 @@ These instructions help set up the project locally for development and testing.
 
 1. Clone the repository:
     ```sh
-    git clone git@gitlab.com:ggosu/zigglybugfree.git
+    git clone https://github.com/GGosu/ziggly-task-tracker.git
     ```
 2. Update application.properties in each service directory with your database credentials.
 3. Start each microservice
