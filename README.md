@@ -1,7 +1,7 @@
 # Java Microservices Portfolio Project
 
 ## Introduction
-This project demonstrates a suite of microservices built using Spring Boot, showcasing my skills as a Java Backend Developer. It features services like authentication, user profile management, project and task management, team management, and time entry tracking, all secured with JWT authentication.
+This project showcases a suite of RESTful microservices developed with Spring Boot, focusing on Java Backend development. It highlights my skills as a Java Backend Developer and includes features such as authentication, user profile management, project and task management, team management, and time entry tracking, all integrated with secure JWT authentication.
 
 ## Features
 - **Authentication Service:** Manages user authentication, token generation, and session management.
@@ -37,7 +37,7 @@ These instructions help set up the project locally for development and testing.
 2. Update application.properties in each service directory with your database credentials.
 3. Start each microservice
 
-## API Endpoints
+## RESTful API Endpoints
 
 Below are some of the key endpoints available in the services:
 ### Auth Service
