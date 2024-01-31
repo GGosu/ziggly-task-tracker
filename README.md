@@ -1,4 +1,4 @@
-# Java Microservices Portfolio Project
+# Ziggly - Java Microservices Task Tracker
 
 ## Introduction
 This project showcases a suite of RESTful microservices developed with Spring Boot, focusing on Java Backend development. It highlights my skills as a Java Backend Developer and includes features such as authentication, user profile management, project and task management, team management, and time entry tracking, all integrated with secure JWT authentication.
