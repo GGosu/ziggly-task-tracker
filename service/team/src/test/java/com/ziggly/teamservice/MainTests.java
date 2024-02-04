@@ -4,7 +4,6 @@ package com.ziggly.teamservice;
 import com.ziggly.model.dto.TeamDTO;
 import com.ziggly.model.dto.TeamUserDTO;
 import com.ziggly.model.enums.Role;
-import com.ziggly.model.team.Team;
 import com.ziggly.teamservice.repository.TeamRepository;
 import com.ziggly.teamservice.service.TeamServiceImpl;
 import com.ziggly.teamservice.service.TeamUserServiceImpl;
@@ -12,20 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static com.ziggly.model.utils.Utils.getMockupRequest;
+import static com.ziggly.model.utils.Utils.getUserId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.mockito.Mockito;
-import jakarta.servlet.http.HttpServletRequest;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-import java.util.Optional;
 
 @SpringBootTest
 @Testcontainers
@@ -43,10 +39,6 @@ class MainTests {
 		registry.add("spring.datasource.password", postgresContainer::getPassword);
 	}
 
-	@Test
-	void contextLoads() {
-	}
-
 	@Autowired
 	private TeamRepository teamRepository;
 	@Autowired
@@ -55,26 +47,13 @@ class MainTests {
 	@Autowired
 	private TeamUserServiceImpl teamUserService;
 	//
-	private HttpServletRequest getRequest(){
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getHeader("X-USER-ID")).thenReturn("123");
-		return request;
-	}
-	private HttpServletRequest getRequest(String id){
-		HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-		Mockito.when(request.getHeader("X-USER-ID")).thenReturn(id);
-		return request;
-	}
 
-	private Integer getUserId(HttpServletRequest request){
-		String userId = request.getHeader("X-USER-ID");
-		return Integer.parseInt(userId);
-	}
 	private void setTestTeamDTO(TeamDTO teamDTO, String name){
 		teamDTO.setName(name);
 		teamDTO.setDescription("A development team");
-		teamDTO.setOwnerId(getUserId(getRequest()));
+		teamDTO.setOwnerId(getUserId(getMockupRequest()));
 		teamDTO.setCreatedAt(System.currentTimeMillis());
+
 	}
 
 	//
@@ -86,21 +65,21 @@ class MainTests {
 		// create team
 		assertEquals(
 				HttpStatus.OK,
-				teamService.createTeam(teamDTO, getRequest()).getStatusCode()
+				teamService.createTeam(teamDTO, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.BAD_REQUEST,
-				teamService.createTeam(teamDTO, getRequest()).getStatusCode()
+				teamService.createTeam(teamDTO, getMockupRequest()).getStatusCode()
 		);
 
 		// get team
 		assertEquals(
 				HttpStatus.OK,
-				teamService.getTeam(1, getRequest()).getStatusCode()
+				teamService.getTeam(1, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamService.getTeam(2, getRequest()).getStatusCode()
+				teamService.getTeam(2, getMockupRequest()).getStatusCode()
 		);
 
 
@@ -111,30 +90,30 @@ class MainTests {
 
 		assertEquals(
 				HttpStatus.OK,
-				teamService.updateTeam(1, updatedTeamDTO, getRequest()).getStatusCode()
+				teamService.updateTeam(1, updatedTeamDTO, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.BAD_REQUEST,
-				teamService.updateTeam(1, teamDTO, getRequest()).getStatusCode()
+				teamService.updateTeam(1, teamDTO, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamService.updateTeam(2, updatedTeamDTO, getRequest()).getStatusCode()
+				teamService.updateTeam(2, updatedTeamDTO, getMockupRequest()).getStatusCode()
 		);
 
 
 		// delete team
 		assertEquals(
 				HttpStatus.FORBIDDEN,
-				teamService.deleteTeam(1, getRequest("2")).getStatusCode()
+				teamService.deleteTeam(1, getMockupRequest("2")).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamService.deleteTeam(2, getRequest()).getStatusCode()
+				teamService.deleteTeam(2, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.OK,
-				teamService.deleteTeam(1, getRequest()).getStatusCode()
+				teamService.deleteTeam(1, getMockupRequest()).getStatusCode()
 		);
 
 
@@ -149,56 +128,56 @@ class MainTests {
 		// create team
 		assertEquals(
 				HttpStatus.OK,
-				teamService.createTeam(teamDTO, getRequest()).getStatusCode()
+				teamService.createTeam(teamDTO, getMockupRequest()).getStatusCode()
 		);
 
 
-		TeamUserDTO teamUserDTO = new TeamUserDTO(1, getUserId(getRequest()), 2, Role.MEMBER);
+		TeamUserDTO teamUserDTO = new TeamUserDTO(1, getUserId(getMockupRequest()), 2, Role.MEMBER);
 
 		//create user
 		assertEquals(
 				HttpStatus.OK,
-				teamUserService.addUserToTeam(2, teamUserDTO, getRequest()).getStatusCode()
+				teamUserService.addUserToTeam(2, teamUserDTO, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.BAD_REQUEST,
-				teamUserService.addUserToTeam(2, teamUserDTO, getRequest()).getStatusCode()
+				teamUserService.addUserToTeam(2, teamUserDTO, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamUserService.addUserToTeam(3, teamUserDTO, getRequest()).getStatusCode()
+				teamUserService.addUserToTeam(3, teamUserDTO, getMockupRequest()).getStatusCode()
 		);
 
 		//get user
 		assertEquals(
 				HttpStatus.OK,
-				teamUserService.getUsersInTeam(2, getRequest()).getStatusCode()
+				teamUserService.getUsersInTeam(2, getMockupRequest()).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamUserService.getUsersInTeam(3, getRequest()).getStatusCode()
+				teamUserService.getUsersInTeam(3, getMockupRequest()).getStatusCode()
 		);
 
 		//update user
-		TeamUserDTO teamUserDTOModified = new TeamUserDTO(1, getUserId(getRequest()), 2, Role.ADMIN);
+		TeamUserDTO teamUserDTOModified = new TeamUserDTO(1, getUserId(getMockupRequest()), 2, Role.ADMIN);
 		assertEquals(
 				HttpStatus.OK,
-				teamUserService.updateUserRoleInTeam(2, getUserId(getRequest()), teamUserDTO, getRequest()).getStatusCode()
+				teamUserService.updateUserRoleInTeam(2, getUserId(getMockupRequest()), teamUserDTO, getMockupRequest()).getStatusCode()
 		);
 
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamUserService.updateUserRoleInTeam(3, getUserId(getRequest()), teamUserDTO, getRequest()).getStatusCode()
+				teamUserService.updateUserRoleInTeam(3, getUserId(getMockupRequest()), teamUserDTO, getMockupRequest()).getStatusCode()
 		);
 
 		//delete user
 		assertEquals(
 				HttpStatus.NOT_FOUND,
-				teamUserService.removeUserFromTeam(3, 2, getRequest("2")).getStatusCode()
+				teamUserService.removeUserFromTeam(3, 2, getMockupRequest("2")).getStatusCode()
 		);
 		assertEquals(
 				HttpStatus.OK,
-				teamUserService.removeUserFromTeam(2, getUserId(getRequest()), getRequest()).getStatusCode()
+				teamUserService.removeUserFromTeam(2, getUserId(getMockupRequest()), getMockupRequest()).getStatusCode()
 		);
 
 	}
